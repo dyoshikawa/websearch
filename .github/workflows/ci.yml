@@ -1,0 +1,48 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+    paths-ignore: &paths-ignore
+      - "docs/**"
+      - "images/**"
+      - ".devcontainer/**"
+      - "LICENSE"
+      - "CONTRIBUTING.md"
+      - "SECURITY.md"
+  pull_request:
+    branches: [main]
+    paths-ignore: *paths-ignore
+
+permissions:
+  contents: read
+
+jobs:
+  quality:
+    name: Code Quality & Tests
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8 # v6.0.1
+
+      - name: Setup mise
+        uses: jdx/mise-action@e6a8b3978addb5a52f2b4cd9d91eafa7f0ab959d # v4.2.0
+        with:
+          experimental: true
+
+      - name: Install dependencies
+        run: pnpm install --ignore-scripts
+
+      - name: Check no files generated
+        run: |
+          if [ -n "$(git status --porcelain)" ]; then
+            echo "Error: Files were generated or modified after install"
+            git status --porcelain
+            exit 1
+          fi
+
+      - name: Run cicheck
+        run: pnpm cicheck
+      # Add once websearch has a build:
+      # - name: Build
+      #   run: pnpm build

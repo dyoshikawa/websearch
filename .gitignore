@@ -1,0 +1,9 @@
+node_modules/
+dist/
+coverage/
+.cspellcache
+*.log
+
+# devcontainer-local / pnpm artifacts
+.pnpm-store/
+tmp/

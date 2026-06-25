@@ -1,0 +1,39 @@
+{
+  "name": "websearch",
+  "version": "0.0.0",
+  "type": "module",
+  "scripts": {
+    "fmt": "oxfmt .",
+    "fmt:check": "oxfmt --check .",
+    "oxlint": "oxlint . --max-warnings 0",
+    "oxlint:fix": "oxlint . --fix --max-warnings 0",
+    "typecheck": "tsc --noEmit",
+    "cspell": "cspell --no-progress --gitignore .",
+    "secretlint": "secretlint --secretlintignore .gitignore \"**/*\"",
+    "check": "pnpm run fmt:check && pnpm run oxlint && pnpm run typecheck",
+    "fix": "pnpm run fmt && pnpm run oxlint:fix",
+    "test": "vitest run --silent=true",
+    "cicheck:code": "pnpm run check && pnpm run test",
+    "cicheck:content": "pnpm run cspell && pnpm run secretlint",
+    "cicheck": "pnpm run cicheck:code && pnpm run cicheck:content",
+    "generate": "rulesync generate",
+    "gitignore": "rulesync gitignore",
+    "prepare": "simple-git-hooks"
+  },
+  "simple-git-hooks": {
+    "pre-commit": "pnpm exec lint-staged"
+  },
+  "devDependencies": {
+    "@secretlint/secretlint-rule-preset-recommend": "13.0.2",
+    "@tsconfig/node24": "^24.0.4",
+    "cspell": "10.0.1",
+    "lint-staged": "17.0.7",
+    "oxfmt": "0.55.0",
+    "oxlint": "1.70.0",
+    "rulesync": "^8.31.0",
+    "secretlint": "13.0.2",
+    "simple-git-hooks": "2.13.1",
+    "typescript": "^6.0.3",
+    "vitest": "^4.1.9"
+  }
+}

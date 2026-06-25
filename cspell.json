@@ -1,0 +1,43 @@
+{
+  "cache": {
+    "useCache": true,
+    "cacheLocation": ".cspellcache"
+  },
+  "useGitignore": true,
+  "files": [
+    "**/*.{ts,tsx,js,jsx,mjs,cjs}",
+    "**/*.{json,yaml,yml}",
+    "**/*.md",
+    "*.{json,yaml,yml,md}"
+  ],
+  "ignorePaths": [
+    "coverage/**",
+    "dist/**",
+    "node_modules/**",
+    ".git/**",
+    ".gitignore",
+    "pnpm-lock.yaml"
+  ],
+  "words": [
+    "dyoshikawa",
+    "websearch",
+    "oxlint",
+    "oxfmt",
+    "secretlint",
+    "cspell",
+    "cicheck",
+    "rulesync",
+    "tldjs",
+    "serena",
+    "deepwiki",
+    "oraios",
+    "uvx",
+    "claudecode",
+    "opencode",
+    "actionlint",
+    "devcontainer",
+    "trivyignores",
+    "webfetch",
+    "TOON"
+  ]
+}

@@ -1,0 +1,8 @@
+[tools]
+bun = "latest"
+go = "latest"
+node = "latest"
+pnpm = "latest"
+python = "latest"
+uv = "latest"
+

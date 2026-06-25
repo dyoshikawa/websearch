@@ -1,0 +1,4 @@
+# Trivy misconfiguration scan ignores.
+# Add AVD-* IDs here to suppress specific findings, with a justification comment.
+# Example (only if you add a devcontainer Dockerfile using sudo as non-root):
+# AVD-DS-0010
