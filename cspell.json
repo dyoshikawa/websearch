@@ -38,6 +38,9 @@
     "devcontainer",
     "trivyignores",
     "webfetch",
-    "TOON"
+    "TOON",
+    "SERP",
+    "generativelanguage",
+    "aiplatform"
   ]
 }
