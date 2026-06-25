@@ -1,9 +1,9 @@
 import { describe, expect, it } from "vitest";
 
-import { createFakeFetch } from "../test-support/fake-fetch.js";
+import { createFakeFetch } from "../test-utils/fake-fetch.js";
 import { createGoogleCseProvider } from "./google-cse.js";
 
-const config = { apiKey: "test-key", cx: "test-cx" };
+const config = { apiKey: "test-key", cx: "test-cx", baseUrl: "https://www.googleapis.com" };
 
 const buildPage = (n: number) => ({
   body: { items: Array.from({ length: 10 }, (_, i) => ({ link: `https://e/${n}-${i}` })) },

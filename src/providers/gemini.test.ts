@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 
-import { createFakeFetch } from "../test-support/fake-fetch.js";
+import { createFakeFetch } from "../test-utils/fake-fetch.js";
 import { createGeminiProvider } from "./gemini.js";
 
 const groundedBody = {
@@ -18,7 +18,13 @@ const groundedBody = {
 describe("gemini provider", () => {
   it("gemini-api backend: uses x-goog-api-key header, snake_case tool, generativelanguage host", async () => {
     const fake = createFakeFetch([{ body: groundedBody }]);
-    const provider = createGeminiProvider({ config: { apiKey: "g-key", backend: "gemini-api" } });
+    const provider = createGeminiProvider({
+      config: {
+        apiKey: "g-key",
+        backend: "gemini-api",
+        baseUrl: "https://generativelanguage.googleapis.com",
+      },
+    });
 
     const result = await provider.search({ query: "euro 2024", fetchImpl: fake.fetchImpl });
 
@@ -36,7 +42,11 @@ describe("gemini provider", () => {
   it("vertex-express backend: uses ?key= query param, camelCase tool, aiplatform host", async () => {
     const fake = createFakeFetch([{ body: groundedBody }]);
     const provider = createGeminiProvider({
-      config: { apiKey: "v-key", backend: "vertex-express" },
+      config: {
+        apiKey: "v-key",
+        backend: "vertex-express",
+        baseUrl: "https://aiplatform.googleapis.com",
+      },
     });
 
     await provider.search({ query: "euro 2024", fetchImpl: fake.fetchImpl });
@@ -51,7 +61,13 @@ describe("gemini provider", () => {
     const fake = createFakeFetch([
       { body: { candidates: [{ content: { parts: [{ text: "" }] } }] } },
     ]);
-    const provider = createGeminiProvider({ config: { apiKey: "g", backend: "gemini-api" } });
+    const provider = createGeminiProvider({
+      config: {
+        apiKey: "g",
+        backend: "gemini-api",
+        baseUrl: "https://generativelanguage.googleapis.com",
+      },
+    });
 
     const result = await provider.search({ query: "q", fetchImpl: fake.fetchImpl });
     expect(result.answer).toBe("");

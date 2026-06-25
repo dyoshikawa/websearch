@@ -10,10 +10,10 @@
 import { z } from "zod";
 
 import type { OpenAIConfig } from "../config/env.js";
-import { WebsearchError } from "../errors/error-formatter.js";
+import { WebsearchError } from "../utils/error.js";
 import type { Citation, NormalizedSearchResult, SearchParams, SearchProvider } from "./provider.js";
 
-const ENDPOINT = "https://api.openai.com/v1/responses";
+const PATH = "/v1/responses";
 const DEFAULT_MODEL = "gpt-5.5";
 
 const annotationSchema = z.looseObject({
@@ -55,7 +55,7 @@ export function createOpenAIProvider(params: OpenAIProviderParams): SearchProvid
       const fetchImpl = searchParams.fetchImpl ?? fetch;
       const model = searchParams.model ?? DEFAULT_MODEL;
 
-      const response = await fetchImpl(ENDPOINT, {
+      const response = await fetchImpl(`${config.baseUrl}${PATH}`, {
         method: "POST",
         headers: {
           authorization: `Bearer ${config.apiKey}`,

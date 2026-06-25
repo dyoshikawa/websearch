@@ -31,6 +31,17 @@ export class WebsearchError extends Error {
   }
 }
 
+/**
+ * Map a thrown value to a process exit code: `2` for usage mistakes, `1` for
+ * any other failure.
+ */
+export function errorExitCode(error: unknown): number {
+  if (error instanceof WebsearchError) {
+    return error.code === "invalid_usage" ? 2 : 1;
+  }
+  return 1;
+}
+
 /** Render any thrown value into a single-line, user-facing message. */
 export function formatError(error: unknown): string {
   if (error instanceof WebsearchError) {

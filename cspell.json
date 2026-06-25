@@ -41,6 +41,9 @@
     "TOON",
     "SERP",
     "generativelanguage",
-    "aiplatform"
+    "aiplatform",
+    "modelcontextprotocol",
+    "customsearch",
+    "esbuild"
   ]
 }

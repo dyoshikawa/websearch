@@ -3,12 +3,25 @@
  *
  * API keys are read from the environment only (never from CLI flags/args) so
  * they don't leak into shell history or process listings.
+ *
+ * Each provider's base URL can be overridden via an environment variable. This
+ * keeps the defaults pointed at the real services while letting tests (and
+ * proxies) redirect traffic to a local endpoint.
  */
 
-import { WebsearchError } from "../errors/error-formatter.js";
+import { WebsearchError } from "../utils/error.js";
 
 export interface Env {
   [key: string]: string | undefined;
+}
+
+const DEFAULT_OPENAI_BASE_URL = "https://api.openai.com";
+const DEFAULT_GOOGLE_BASE_URL = "https://www.googleapis.com";
+const DEFAULT_GEMINI_BASE_URL = "https://generativelanguage.googleapis.com";
+const DEFAULT_VERTEX_BASE_URL = "https://aiplatform.googleapis.com";
+
+function stripTrailingSlash(value: string): string {
+  return value.endsWith("/") ? value.slice(0, -1) : value;
 }
 
 export interface ResolveOpenAIConfigParams {
@@ -17,6 +30,7 @@ export interface ResolveOpenAIConfigParams {
 
 export interface OpenAIConfig {
   apiKey: string;
+  baseUrl: string;
 }
 
 export function resolveOpenAIConfig(params: ResolveOpenAIConfigParams = {}): OpenAIConfig {
@@ -28,7 +42,10 @@ export function resolveOpenAIConfig(params: ResolveOpenAIConfigParams = {}): Ope
       message: "OPENAI_API_KEY is not set. Export it to use the openai provider.",
     });
   }
-  return { apiKey };
+  return {
+    apiKey,
+    baseUrl: stripTrailingSlash(env.WEBSEARCH_OPENAI_BASE_URL ?? DEFAULT_OPENAI_BASE_URL),
+  };
 }
 
 export interface ResolveGoogleCseConfigParams {
@@ -38,6 +55,7 @@ export interface ResolveGoogleCseConfigParams {
 export interface GoogleCseConfig {
   apiKey: string;
   cx: string;
+  baseUrl: string;
 }
 
 export function resolveGoogleCseConfig(params: ResolveGoogleCseConfigParams = {}): GoogleCseConfig {
@@ -57,7 +75,11 @@ export function resolveGoogleCseConfig(params: ResolveGoogleCseConfigParams = {}
         "GOOGLE_CSE_CX is not set. Export your Programmable Search Engine ID to use the google provider.",
     });
   }
-  return { apiKey, cx };
+  return {
+    apiKey,
+    cx,
+    baseUrl: stripTrailingSlash(env.WEBSEARCH_GOOGLE_BASE_URL ?? DEFAULT_GOOGLE_BASE_URL),
+  };
 }
 
 export type GeminiBackend = "gemini-api" | "vertex-express";
@@ -70,6 +92,7 @@ export interface ResolveGeminiConfigParams {
 export interface GeminiConfig {
   apiKey: string;
   backend: GeminiBackend;
+  baseUrl: string;
 }
 
 export function resolveGeminiConfig(params: ResolveGeminiConfigParams): GeminiConfig {
@@ -85,7 +108,11 @@ export function resolveGeminiConfig(params: ResolveGeminiConfigParams): GeminiCo
           "VERTEX_API_KEY is not set. Export it to use the gemini provider with the vertex-express backend.",
       });
     }
-    return { apiKey, backend };
+    return {
+      apiKey,
+      backend,
+      baseUrl: stripTrailingSlash(env.WEBSEARCH_VERTEX_BASE_URL ?? DEFAULT_VERTEX_BASE_URL),
+    };
   }
 
   const apiKey = env.GEMINI_API_KEY ?? env.GOOGLE_API_KEY;
@@ -95,5 +122,9 @@ export function resolveGeminiConfig(params: ResolveGeminiConfigParams): GeminiCo
       message: "GEMINI_API_KEY is not set. Export it to use the gemini provider.",
     });
   }
-  return { apiKey, backend };
+  return {
+    apiKey,
+    backend,
+    baseUrl: stripTrailingSlash(env.WEBSEARCH_GEMINI_BASE_URL ?? DEFAULT_GEMINI_BASE_URL),
+  };
 }

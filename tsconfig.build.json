@@ -3,5 +3,5 @@
   "compilerOptions": {
     "noEmit": false
   },
-  "exclude": ["node_modules", "dist", "**/*.test.ts", "src/e2e/**", "src/test-support/**"]
+  "exclude": ["node_modules", "dist", "**/*.test.ts", "src/e2e/**", "src/test-utils/**"]
 }

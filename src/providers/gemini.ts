@@ -21,14 +21,20 @@
 import { z } from "zod";
 
 import type { GeminiBackend, GeminiConfig } from "../config/env.js";
-import { WebsearchError } from "../errors/error-formatter.js";
+import { WebsearchError } from "../utils/error.js";
 import type { Citation, NormalizedSearchResult, SearchParams, SearchProvider } from "./provider.js";
 
 const DEFAULT_MODEL = "gemini-2.5-flash";
 
+interface BuildRequestParams {
+  model: string;
+  apiKey: string;
+  baseUrl: string;
+}
+
 interface BackendWire {
   searchToolField: "google_search" | "googleSearch";
-  buildRequest: (params: { model: string; apiKey: string }) => {
+  buildRequest: (params: BuildRequestParams) => {
     url: string;
     headers: Record<string, string>;
   };
@@ -37,15 +43,15 @@ interface BackendWire {
 const BACKENDS: Record<GeminiBackend, BackendWire> = {
   "gemini-api": {
     searchToolField: "google_search",
-    buildRequest: ({ model, apiKey }) => ({
-      url: `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent`,
+    buildRequest: ({ model, apiKey, baseUrl }) => ({
+      url: `${baseUrl}/v1beta/models/${model}:generateContent`,
       headers: { "x-goog-api-key": apiKey, "content-type": "application/json" },
     }),
   },
   "vertex-express": {
     searchToolField: "googleSearch",
-    buildRequest: ({ model, apiKey }) => ({
-      url: `https://aiplatform.googleapis.com/v1/publishers/google/models/${model}:generateContent?key=${encodeURIComponent(apiKey)}`,
+    buildRequest: ({ model, apiKey, baseUrl }) => ({
+      url: `${baseUrl}/v1/publishers/google/models/${model}:generateContent?key=${encodeURIComponent(apiKey)}`,
       headers: { "content-type": "application/json" },
     }),
   },
@@ -83,7 +89,11 @@ export function createGeminiProvider(params: GeminiProviderParams): SearchProvid
     async search(searchParams: SearchParams): Promise<NormalizedSearchResult> {
       const fetchImpl = searchParams.fetchImpl ?? fetch;
       const model = searchParams.model ?? DEFAULT_MODEL;
-      const { url, headers } = wire.buildRequest({ model, apiKey: config.apiKey });
+      const { url, headers } = wire.buildRequest({
+        model,
+        apiKey: config.apiKey,
+        baseUrl: config.baseUrl,
+      });
 
       const response = await fetchImpl(url, {
         method: "POST",

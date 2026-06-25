@@ -1,9 +1,9 @@
 import { describe, expect, it } from "vitest";
 
-import { createFakeFetch } from "../test-support/fake-fetch.js";
+import { createFakeFetch } from "../test-utils/fake-fetch.js";
 import { createOpenAIProvider } from "./openai.js";
 
-const config = { apiKey: "sk-test" };
+const config = { apiKey: "sk-test", baseUrl: "https://api.openai.com" };
 
 describe("openai provider", () => {
   it("extracts answer, citations, and search queries", async () => {

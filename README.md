@@ -1,8 +1,9 @@
 # websearch
 
-A CLI that performs web search using the API keys of multiple providers behind a
-single, unified interface. Bring whichever provider key you already have and
-search the web from your terminal.
+Web search using the API keys of multiple providers behind a single, unified
+interface. Bring whichever provider key you already have and search the web —
+either from your terminal (**CLI mode**) or from an MCP client such as an editor
+or agent (**MCP server mode**). Both modes share the same core search logic.
 
 ## Providers
 
@@ -25,15 +26,16 @@ pnpm install
 pnpm build      # emits dist/, exposes the `websearch` bin
 ```
 
-During development you can run without building via `pnpm start -- <args>`.
+During development you can run without building via `pnpm dev -- <args>` (runs
+the TypeScript source through `tsx`).
 
-## Usage
+## CLI mode
 
 ```bash
-websearch <query> --provider <openai|google|gemini> [options]
+websearch search <query...> --provider <openai|google|gemini> [options]
 ```
 
-Options:
+Options for `search`:
 
 | Flag                    | Description                                 |
 | ----------------------- | ------------------------------------------- |
@@ -43,15 +45,40 @@ Options:
 | `--gemini-backend <b>`  | `gemini-api` (default) \| `vertex-express`  |
 | `--json`                | Emit normalized JSON instead of text        |
 | `--raw`                 | Include the provider's raw response         |
-| `-h, --help`            | Show help                                   |
 
 Examples:
 
 ```bash
-websearch "best static site generators 2026" -p google -n 5
-websearch "summarize the latest TypeScript release" -p openai
-websearch "who won euro 2024" -p gemini --gemini-backend vertex-express --json
+websearch search "best static site generators 2026" -p google -n 5
+websearch search "summarize the latest TypeScript release" -p openai
+websearch search "who won euro 2024" -p gemini --gemini-backend vertex-express --json
 ```
+
+## MCP server mode
+
+Start a [Model Context Protocol](https://modelcontextprotocol.io) server over
+stdio that exposes a single `web_search` tool:
+
+```bash
+websearch mcp
+```
+
+Register it with an MCP client, e.g.:
+
+```jsonc
+{
+  "mcpServers": {
+    "websearch": {
+      "command": "websearch",
+      "args": ["mcp"],
+      "env": { "GEMINI_API_KEY": "..." },
+    },
+  },
+}
+```
+
+The `web_search` tool accepts `{ query, provider, maxResults?, model?, geminiBackend?, includeRaw? }`
+and returns the normalized result as JSON.
 
 ## Authentication
 
@@ -75,8 +102,23 @@ they don't leak into shell history or process listings.
   terms. As a CLI we surface the queries the model ran on the `Searches:` line;
   the source URIs Gemini returns are temporary redirect links.
 
+## Architecture
+
+```
+src/
+  cli/        commander program: `search` and `mcp` commands
+  mcp/        MCP server + the web_search tool
+  lib/        runSearch — the shared core called by both CLI and MCP
+  providers/  per-provider implementations (openai, google-cse, gemini)
+  config/     credential + base-URL resolution from env
+  output/     text / JSON formatting
+  utils/      logger, error formatter
+  e2e/        end-to-end tests (spawn the CLI / drive the MCP server)
+```
+
 ## Development
 
 ```bash
-pnpm cicheck      # format check, lint, typecheck, tests, spelling, secrets
+pnpm cicheck      # format check, lint, typecheck, unit tests, spelling, secrets
+pnpm test:e2e     # end-to-end tests (CLI subprocess + MCP stdio client)
 ```

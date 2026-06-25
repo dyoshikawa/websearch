@@ -12,10 +12,10 @@
 import { z } from "zod";
 
 import type { GoogleCseConfig } from "../config/env.js";
-import { WebsearchError } from "../errors/error-formatter.js";
+import { WebsearchError } from "../utils/error.js";
 import type { NormalizedSearchResult, SearchParams, SearchProvider } from "./provider.js";
 
-const ENDPOINT = "https://www.googleapis.com/customsearch/v1";
+const PATH = "/customsearch/v1";
 
 /** Max results the API returns per request, and the hard cap on total results. */
 const MAX_PER_REQUEST = 10;
@@ -112,7 +112,7 @@ interface BuildUrlParams {
 }
 
 function buildUrl(params: BuildUrlParams): string {
-  const url = new URL(ENDPOINT);
+  const url = new URL(`${params.config.baseUrl}${PATH}`);
   url.searchParams.set("key", params.config.apiKey);
   url.searchParams.set("cx", params.config.cx);
   url.searchParams.set("q", params.query);
