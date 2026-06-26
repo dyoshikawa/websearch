@@ -1,4 +1,4 @@
-# webseek
+# WebSeek
 
 Web search using the API keys of multiple providers behind a single, unified
 interface. Bring whichever provider key you already have and search the web —
