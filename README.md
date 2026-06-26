@@ -19,11 +19,18 @@ The Gemini provider supports two backends that share the same request/response
 shape: the **Gemini Developer API** (`gemini-api`, default) and **Vertex AI
 express mode** (`vertex-express`).
 
-## Install / build
+## Install
+
+```bash
+npm install -g webseek      # install the CLI globally
+npx webseek search "..." -p google   # or run without installing
+```
+
+### Build from source
 
 ```bash
 pnpm install
-pnpm build      # emits dist/, exposes the `webseek` bin
+pnpm build      # dual-format (ESM + CJS) build via tsdown; exposes the `webseek` bin
 ```
 
 During development you can run without building via `pnpm dev -- <args>` (runs
@@ -80,6 +87,27 @@ Register it with an MCP client, e.g.:
 The `web_search` tool accepts `{ query, provider, maxResults?, model?, geminiBackend?, includeRaw? }`
 and returns the normalized result as JSON.
 
+## Library (programmatic API)
+
+`webseek` is published as a dual-format package (ESM + CJS), so it can be
+imported as a library in addition to running as a CLI/MCP server:
+
+```ts
+import { runSearch, WebseekError } from "webseek";
+
+const result = await runSearch({ provider: "google", query: "best static site generators 2026" });
+console.log(result.results);
+```
+
+CommonJS consumers can `require` it the same way:
+
+```js
+const { runSearch } = require("webseek");
+```
+
+To embed the `web_search` tool into your own MCP server, use the
+`createWebSearchTool` factory exported from the same entry point.
+
 ## Authentication
 
 API keys are read from **environment variables only** (never from flags), so
@@ -106,6 +134,7 @@ they don't leak into shell history or process listings.
 
 ```
 src/
+  index.ts    public library entry (runSearch, types, createWebSearchTool)
   cli/        commander program: `search` and `mcp` commands
   mcp/        MCP server + the web_search tool
   lib/        runSearch — the shared core called by both CLI and MCP

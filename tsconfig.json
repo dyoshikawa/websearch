@@ -1,14 +1,10 @@
 {
   "extends": "@tsconfig/node24/tsconfig.json",
   "compilerOptions": {
-    "outDir": "./dist",
-    "rootDir": ".",
-    "declaration": true,
-    "declarationMap": true,
-    "sourceMap": true,
+    "noEmit": true,
     "noUncheckedIndexedAccess": true,
     "types": ["node"]
   },
-  "include": ["src/**/*.ts", "scripts/**/*.ts"],
+  "include": ["src/**/*.ts", "tsdown.config.ts"],
   "exclude": ["node_modules", "dist"]
 }

@@ -1,16 +1,52 @@
 {
   "name": "webseek",
   "version": "0.0.0",
+  "description": "Unified multi-provider web search as a CLI, MCP server, and library (OpenAI, Google Custom Search, Gemini)",
+  "keywords": [
+    "web-search",
+    "search",
+    "cli",
+    "mcp",
+    "openai",
+    "google",
+    "gemini",
+    "serp"
+  ],
+  "homepage": "https://github.com/dyoshikawa/websearch#readme",
+  "bugs": {
+    "url": "https://github.com/dyoshikawa/websearch/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/dyoshikawa/websearch.git"
+  },
+  "license": "MIT",
+  "author": "dyoshikawa",
   "type": "module",
+  "exports": {
+    ".": {
+      "import": {
+        "types": "./dist/index.d.mts",
+        "default": "./dist/index.mjs"
+      },
+      "require": {
+        "types": "./dist/index.d.cts",
+        "default": "./dist/index.cjs"
+      }
+    }
+  },
+  "main": "dist/index.cjs",
+  "module": "dist/index.mjs",
+  "types": "dist/index.d.mts",
   "bin": {
-    "webseek": "./dist/src/cli/index.js"
+    "webseek": "dist/cli/index.mjs"
   },
   "files": [
     "dist"
   ],
   "scripts": {
-    "build": "tsc -p tsconfig.build.json",
-    "start": "node dist/src/cli/index.js",
+    "build": "tsdown",
+    "start": "node dist/cli/index.mjs",
     "dev": "tsx src/cli/index.ts",
     "fmt": "oxfmt .",
     "fmt:check": "oxfmt --check .",
@@ -28,10 +64,17 @@
     "cicheck": "pnpm run cicheck:code && pnpm run cicheck:content",
     "generate": "rulesync generate",
     "gitignore": "rulesync gitignore",
-    "prepare": "simple-git-hooks"
+    "prepare": "simple-git-hooks",
+    "prepublishOnly": "pnpm run build"
   },
   "simple-git-hooks": {
     "pre-commit": "pnpm exec lint-staged"
+  },
+  "engines": {
+    "node": ">=20.11.0"
+  },
+  "publishConfig": {
+    "access": "public"
   },
   "devDependencies": {
     "@secretlint/secretlint-rule-preset-recommend": "13.0.2",
@@ -44,6 +87,7 @@
     "rulesync": "^8.31.0",
     "secretlint": "13.0.2",
     "simple-git-hooks": "2.13.1",
+    "tsdown": "^0.22.3",
     "tsx": "^4.22.4",
     "typescript": "^6.0.3",
     "vitest": "^4.1.9"

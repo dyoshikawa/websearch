@@ -44,6 +44,7 @@
     "aiplatform",
     "modelcontextprotocol",
     "customsearch",
-    "esbuild"
+    "esbuild",
+    "tsdown"
   ]
 }
