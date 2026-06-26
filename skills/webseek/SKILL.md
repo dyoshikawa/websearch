@@ -1,3 +1,14 @@
+---
+name: webseek
+description: >-
+  Unified multi-provider web search via the webseek CLI, MCP server, and library
+  (OpenAI, Google Custom Search, Gemini). Use when running a web search from the
+  terminal, embedding web search into a program, or wiring webseek as an MCP
+  web_search tool.
+---
+
+<!-- Generated from README.md by scripts/sync-skill-docs.ts. Do not edit by hand. -->
+
 # webseek
 
 Web search using the API keys of multiple providers behind a single, unified
@@ -129,41 +140,3 @@ they don't leak into shell history or process listings.
 - **Gemini grounding requires displaying Google Search Suggestions** per its
   terms. As a CLI we surface the queries the model ran on the `Searches:` line;
   the source URIs Gemini returns are temporary redirect links.
-
-## Architecture
-
-```
-src/
-  index.ts    public library entry (runSearch, types, createWebSearchTool)
-  cli/        commander program: root search command and `mcp` command
-  mcp/        MCP server + the web_search tool
-  lib/        runSearch — the shared core called by both CLI and MCP
-  providers/  per-provider implementations (openai, google-cse, gemini)
-  config/     credential + base-URL resolution from env
-  output/     text / JSON formatting
-  utils/      logger, error formatter
-  e2e/        end-to-end tests (spawn the CLI / drive the MCP server)
-```
-
-## Development
-
-```bash
-pnpm cicheck      # format check, lint, typecheck, unit tests, spelling, secrets
-pnpm test:e2e     # end-to-end tests (CLI subprocess + MCP stdio client)
-```
-
-## Releasing
-
-Publishing to npm is automated. To cut a new version:
-
-1. Run the `draft-release` skill — it bumps the version on a `release/vX.Y.Z`
-   branch, opens a PR, and creates a **draft** GitHub release.
-2. Review and merge the release PR into `main`.
-3. Open the draft release on GitHub and click **Publish release**.
-
-Publishing the release triggers
-[`.github/workflows/publish.yml`](.github/workflows/publish.yml), which verifies
-the tag matches `package.json` and runs `pnpm publish`. Authentication uses npm
-**trusted publishing** (OIDC) — no token secret is required, and provenance is
-generated automatically. Configure the trusted publisher for the package once on
-npmjs.com, pointing it at this repository's `publish.yml` workflow.
